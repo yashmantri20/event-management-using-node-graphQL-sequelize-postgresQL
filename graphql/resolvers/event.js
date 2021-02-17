@@ -1,10 +1,34 @@
 const { AuthenticationError, UserInputError, ApolloError } = require("apollo-server-express");
 
-const { Event } = require("../../database/models");
+const { Event, Guest } = require("../../database/models");
 const { validEventCreated } = require('../../EventValidation');
 
 
 module.exports = {
+    Query: {
+        async getAllEvents() {
+            try {
+                const events = await Event.findAll({ include: { model: Guest, as: "guests" } });
+                if (!events) throw new UserInputError("No Events")
+                return events;
+            } catch (error) {
+                throw new ApolloError(error.message)
+            }
+        },
+
+        async getSpecificEvent(_, { eventId }) {
+            try {
+                const event = await Event.findByPk(eventId, {
+                    include: [{ model: Guest, as: "guests" }]
+                });
+                if (!event) throw new UserInputError("Event Does not exists")
+                return event;
+            } catch (error) {
+                throw new ApolloError(error.message)
+            }
+        }
+    },
+
     Mutation: {
         async createNewEvent(_, { input }, context) {
             const { eventName, description, date } = input;

@@ -14,7 +14,7 @@ module.exports = {
             const event = await Event.findByPk(eventId);
             if (!event) throw new UserInputError("Event Does not exist");
 
-            if (event.userId !== user.id) throw new AuthenticationError("Your not allowed to delete the event");
+            if (event.userId !== user.id) throw new AuthenticationError("Your not allowed to invite the guest");
 
             const err = validInviteInput(email);
             if (err) throw new UserInputError(err)
@@ -29,7 +29,7 @@ module.exports = {
             if (userAlreadyInvited) throw new AuthenticationError("User Already Invited");
             try {
                 const guest = await user.createGuest({ email, eventId, userId: user.id })
-                return { ...guest.toJSON(), event };
+                return { ...guest.toJSON(), events: event };
             } catch (error) {
                 throw new ApolloError(error.message)
             }

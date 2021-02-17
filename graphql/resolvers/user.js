@@ -152,8 +152,10 @@ module.exports = {
             const guest = await Guest.findAll({
                 where: {
                     email: user.email
-                }
-            })
+                },
+                include: [{ model: Event, as: "events" }]
+            },
+            )
             return { ...user.toJSON(), createdEvents: event, invitedEvents: guest };
         }
     }

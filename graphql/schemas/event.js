@@ -7,7 +7,7 @@ module.exports = gql`
      eventName: String!
      description: String!
      date: String!
-     invitedGuests: [Guest]
+     guests: [GuestResponse]
  }
 
  extend type Mutation {
@@ -15,6 +15,16 @@ module.exports = gql`
      updateEvent(input: UpdateEventInput!): Event!
      deleteEvent(eventId:ID!): String!
  }
+
+ extend type Query{
+     getAllEvents: [Event!]
+     getSpecificEvent(eventId: ID!): Event!
+ }
+
+ type GuestResponse{
+    id: ID!
+    email: String!
+}
 
 input CreateEventInput{
     eventName: String!
