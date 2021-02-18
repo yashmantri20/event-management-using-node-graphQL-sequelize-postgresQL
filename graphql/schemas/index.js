@@ -2,7 +2,7 @@ const { gql } = require('apollo-server-express');
 const userType = require('./user')
 const EventType = require('./event')
 const GuestType = require('./guest')
-
+const PaginationType = require('./pagination')
 
 const rootType = gql`
  type Query {
@@ -11,6 +11,7 @@ const rootType = gql`
  type Mutation {
      root: String
  }
+
 `;
 
-module.exports = [rootType, userType, EventType, GuestType];
+module.exports = [rootType, userType, EventType, GuestType, PaginationType];

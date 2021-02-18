@@ -17,7 +17,7 @@ module.exports = gql`
  }
 
  extend type Query{
-     getAllEvents: [Event!]
+     getAllEvents(input: Pagination): [Event!]
      getSpecificEvent(eventId: ID!): Event!
  }
 

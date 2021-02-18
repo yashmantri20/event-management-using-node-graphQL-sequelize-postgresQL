@@ -2,13 +2,41 @@ const { AuthenticationError, UserInputError, ApolloError } = require("apollo-ser
 
 const { Event, Guest } = require("../../database/models");
 const { validEventCreated } = require('../../EventValidation');
+const { Op } = require("sequelize");
 
 
 module.exports = {
     Query: {
-        async getAllEvents() {
+        async getAllEvents(_, { input }) {
+            let searchquery = {}
+
+            const { page, pagesize, sort, search } = input;
+            let limit = pagesize || null;
+            let offset = (page - 1) * pagesize || 0;
+
+            if (sort) {
+                var { sortbyvalue, sorttype } = sort;
+                order = [[sortbyvalue, sorttype]];
+            }
+            else {
+                order = []
+            }
+
+            if (search) {
+                const { searchbyvalue, text } = search;
+                searchquery[searchbyvalue] = { [Op.iLike]: text + "%" }
+            }
+
             try {
-                const events = await Event.findAll({ include: { model: Guest, as: "guests" } });
+                const events = await Event.findAll(
+                    {
+                        where: searchquery,
+                        include: { model: Guest, as: "guests" },
+                        limit,
+                        offset,
+                        order
+                    });
+
                 if (!events) throw new UserInputError("No Events")
                 return events;
             } catch (error) {
