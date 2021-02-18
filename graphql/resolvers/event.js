@@ -1,7 +1,7 @@
 const { AuthenticationError, UserInputError, ApolloError } = require("apollo-server-express");
 
 const { Event, Guest } = require("../../database/models");
-const { validEventCreated } = require('../../EventValidation');
+const { validEventCreated } = require('../../utils/EventValidation');
 const { Op } = require("sequelize");
 
 

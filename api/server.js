@@ -1,6 +1,6 @@
 const express = require('express');
 const { createServer } = require('http');
-const { ApolloServer } = require('apollo-server-express');
+const { ApolloServer, PubSub } = require('apollo-server-express');
 const cors = require('cors');
 const typeDefs = require('../graphql/schemas');
 const resolvers = require('../graphql/resolvers');

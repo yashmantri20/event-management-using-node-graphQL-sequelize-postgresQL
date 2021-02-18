@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { AuthenticationError, UserInputError, ApolloError } = require("apollo-server-express");
-const { validRegiterInput, validLoginInput, validChangePasswordInput, validResetPasswordInput } = require('../../UserValidation');
+const { validRegiterInput, validLoginInput, validChangePasswordInput, validResetPasswordInput } = require('../../utils/UserValidation');
 const crypto = require('crypto');
-const { mailSender } = require('../../mailSender');
+const { mailSender } = require('../../utils/mailSender');
 const { Op } = require("sequelize");
 
 const { User, Event, Guest } = require("../../database/models");

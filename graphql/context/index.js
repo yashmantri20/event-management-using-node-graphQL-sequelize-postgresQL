@@ -5,7 +5,7 @@ const { AuthenticationError } = require('apollo-server-express')
 const verifyToken = async (token) => {
     try {
         if (!token) return null;
-        const { id } = await jwt.verify(token, process.env.SECRET_KEY);
+        const { id } = jwt.verify(token, process.env.SECRET_KEY);
         const user = await User.findByPk(id);
         return user;
     } catch (error) {
@@ -17,4 +17,4 @@ module.exports = async ({ req }) => {
     const token = (req.headers && req.headers.authorization) || '';
     const user = await verifyToken(token)
     return { user };
-};
+}; 

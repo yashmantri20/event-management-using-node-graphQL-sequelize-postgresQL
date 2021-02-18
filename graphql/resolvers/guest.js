@@ -1,7 +1,7 @@
 const { AuthenticationError, UserInputError, ApolloError } = require("apollo-server-express");
 
 const { Event, Guest } = require("../../database/models");
-const { validInviteInput } = require('../../EventValidation');
+const { validInviteInput } = require('../../utils/EventValidation');
 
 
 module.exports = {
