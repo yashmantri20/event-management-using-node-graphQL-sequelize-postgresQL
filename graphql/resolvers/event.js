@@ -3,7 +3,11 @@ const { AuthenticationError, UserInputError, ApolloError } = require("apollo-ser
 const { Event, Guest } = require("../../database/models");
 const { validEventCreated } = require('../../utils/EventValidation');
 const { Op } = require("sequelize");
+const checkAuth = require('../../graphql/context/check-auth');
 
+const NEW_EVENT = "NEW_EVENT";
+const UPDATED_EVENT = "UPDATED_EVENT";
+const DELETED_EVENT = "DELETED_EVENT";
 
 module.exports = {
     Query: {
@@ -59,15 +63,19 @@ module.exports = {
 
     Mutation: {
         async createNewEvent(_, { input }, context) {
+            const { pubsub } = context;
             const { eventName, description, date } = input;
             const err = validEventCreated(eventName, description, date);
 
             if (err) throw new UserInputError(err)
 
             try {
-                const { user } = context;
+                const user = await checkAuth(context);
                 if (!user) throw new AuthenticationError("User Not Authenticated");
                 const event = await user.createEvent({ eventName, description, date, userId: user.id })
+                pubsub.publish(NEW_EVENT, {
+                    newEvent: event
+                })
                 return event;
             } catch (error) {
                 throw new ApolloError(error.message)
@@ -75,6 +83,8 @@ module.exports = {
         },
 
         async updateEvent(_, { input }, context) {
+            const { pubsub } = context;
+
             const { eventId, eventName, description, date } = input;
             const event = await Event.findByPk(eventId);
 
@@ -86,12 +96,15 @@ module.exports = {
 
             try {
 
-                const { user } = context;
+                const user = await checkAuth(context);
                 if (!user) throw new AuthenticationError("User Not Authenticated");
 
                 if (event.userId !== user.id) throw new AuthenticationError("User Not Allowed to update the event");
 
                 const updatedEvent = await event.update(input);
+                pubsub.publish(UPDATED_EVENT, {
+                    updatedEvent: updatedEvent
+                })
                 return updatedEvent;
 
             } catch (error) {
@@ -101,7 +114,8 @@ module.exports = {
 
         async deleteEvent(_, { eventId }, context) {
             try {
-                const { user } = context;
+                const { pubsub } = context;
+                const user = await checkAuth(context);
                 const event = await Event.findByPk(eventId)
                 if (!event) throw new ApolloError("Event Does not exist")
 
@@ -111,6 +125,9 @@ module.exports = {
                             id: eventId
                         }
                     })
+                    pubsub.publish(DELETED_EVENT, {
+                        deletedEvent: event
+                    })
                     return "Event Deleted"
                 }
                 return "Your not allowed to delete the event"
@@ -119,7 +136,19 @@ module.exports = {
                 throw new ApolloError(error.message)
             }
         }
-
     },
+
+    Subscription: {
+        newEvent: {
+            subscribe: (_, __, { pubsub }) => pubsub.asyncIterator([NEW_EVENT])
+        },
+        updatedEvent: {
+            subscribe: (_, __, { pubsub }) => pubsub.asyncIterator([UPDATED_EVENT])
+        },
+        deletedEvent: {
+            subscribe: (_, __, { pubsub }) => pubsub.asyncIterator([DELETED_EVENT])
+        }
+    },
+
 };
 

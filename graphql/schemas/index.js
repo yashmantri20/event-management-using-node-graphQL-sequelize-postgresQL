@@ -12,6 +12,9 @@ const rootType = gql`
      root: String
  }
 
+ type Subscription {
+     root: String
+ }
 `;
 
 module.exports = [rootType, userType, EventType, GuestType, PaginationType];

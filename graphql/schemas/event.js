@@ -21,6 +21,12 @@ module.exports = gql`
      getSpecificEvent(eventId: ID!): Event!
  }
 
+ extend type Subscription{
+  newEvent: Event!
+  updatedEvent: Event!
+  deletedEvent: Event!
+}
+
  type GuestResponse{
     id: ID!
     email: String!

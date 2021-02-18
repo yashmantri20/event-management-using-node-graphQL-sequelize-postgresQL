@@ -5,6 +5,7 @@ const { validRegiterInput, validLoginInput, validChangePasswordInput, validReset
 const crypto = require('crypto');
 const { mailSender } = require('../../utils/mailSender');
 const { Op } = require("sequelize");
+const checkAuth = require('../../graphql/context/check-auth');
 
 const { User, Event, Guest } = require("../../database/models");
 
@@ -65,13 +66,12 @@ module.exports = {
             }
         },
 
-
         async updatePassword(_, { oldPassword, newPassword }, context) {
             const err = validChangePasswordInput(oldPassword, newPassword);
             if (err) throw new UserInputError(err)
 
             try {
-                const user = context.user;
+                const user = await checkAuth(context);
                 if (user) {
                     const match = bcrypt.compareSync(oldPassword, user.password);
                     if (!match) throw new AuthenticationError("Invalid credentials");
