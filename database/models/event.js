@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'eventId',
       as: 'guests',
     });
+
     Event.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',

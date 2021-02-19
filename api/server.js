@@ -33,7 +33,6 @@ const apolloServer = new ApolloServer({
 apolloServer.applyMiddleware({ app });
 
 const server = createServer(app);
-apolloServer.installSubscriptionHandlers(server)
-
+apolloServer.installSubscriptionHandlers(server) 
 
 module.exports = server;
