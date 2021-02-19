@@ -5,6 +5,9 @@ const GuestType = require('./guest')
 const PaginationType = require('./pagination')
 
 const rootType = gql`
+
+directive @date(format: String) on FIELD_DEFINITION
+
  type Query {
      root: String
  }

@@ -5,6 +5,7 @@ const cors = require('cors');
 const typeDefs = require('../graphql/schemas');
 const resolvers = require('../graphql/resolvers');
 const { verifyToken } = require('../graphql/context/verify-token');
+const DateDirective = require('../graphql/directives/date');
 const app = express();
 require('dotenv').config();
 
@@ -14,6 +15,9 @@ app.use(cors());
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
+    schemaDirectives: {
+        date: DateDirective
+    },
     subscriptions: {
         onConnect: async (connectionParams, webSocket) => {
             if (connectionParams.Authorization) {

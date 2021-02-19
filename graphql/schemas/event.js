@@ -6,7 +6,7 @@ module.exports = gql`
      id: ID!
      eventName: String!
      description: String!
-     date: String!
+     date: String! @date(format: "mmmm d, yyyy")
      guests: [GuestResponse]
  }
 
