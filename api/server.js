@@ -4,6 +4,7 @@ const { ApolloServer, PubSub } = require('apollo-server-express');
 const cors = require('cors');
 const typeDefs = require('../graphql/schemas');
 const resolvers = require('../graphql/resolvers');
+const { verifyToken } = require('../graphql/context/verify-token');
 const app = express();
 require('dotenv').config();
 
@@ -14,8 +15,11 @@ const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     subscriptions: {
-        onConnect: (connectionParams, webSocket, context) => {
-            console.log('Connected!')
+        onConnect: async (connectionParams, webSocket) => {
+            if (connectionParams.Authorization) {
+                const user = await verifyToken(connectionParams.Authorization);
+                return user
+            }
         },
         onDisconnect: (webSocket, context) => {
             console.log('Disconnected!')
@@ -33,6 +37,6 @@ const apolloServer = new ApolloServer({
 apolloServer.applyMiddleware({ app });
 
 const server = createServer(app);
-apolloServer.installSubscriptionHandlers(server) 
+apolloServer.installSubscriptionHandlers(server)
 
 module.exports = server;
