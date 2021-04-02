@@ -19,7 +19,10 @@ module.exports = {
     async getAllEvents(_, { input }) {
       let searchquery = {};
 
-      const { page, pagesize, sort, search } = input;
+      if (input !== undefined) {
+        var { page, pagesize, sort, search } = input;
+      }
+
       let limit = pagesize || null;
       let offset = (page - 1) * pagesize || 0;
 
