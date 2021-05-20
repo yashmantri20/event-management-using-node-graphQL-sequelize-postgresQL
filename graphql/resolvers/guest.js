@@ -6,12 +6,14 @@ const {
 
 const { Event, Guest } = require("../../database/models");
 const { validInviteInput } = require("../../utils/EventValidation");
+const checkAuth = require('../context/check-auth');
 
 module.exports = {
   Mutation: {
     async createGuest(_, { input }, context) {
       const { eventId, email } = input;
-      const { user } = context;
+      const user = await checkAuth(context);
+
       if (!user) throw new AuthenticationError("User Not Authenticated");
 
       const event = await Event.findByPk(eventId);

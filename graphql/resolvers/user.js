@@ -148,7 +148,8 @@ module.exports = {
 
   Query: {
     async getUser(_, __, context) {
-      const { user } = context;
+
+      const user = await checkAuth(context);
       const event = await user.getEvents();
 
       const guest = await Guest.findAll({
